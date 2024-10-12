@@ -1,6 +1,7 @@
-document.addEventListener('paste', async (e) => {
+document.addEventListener('paste', async (e: ClipboardEvent) => {
     e.preventDefault();
-    if (e.clipboardData.files?.length > 0) {
+    if (!e.clipboardData) return
+    if (e.clipboardData.files.length > 0) {
         const data = e.clipboardData.files;
         postIt("/upload", data[0]);
     } else {
@@ -18,7 +19,7 @@ window.addEventListener('load', async (e) => {
   });
 
 
-async function postIt(url, data) {
+async function postIt(url: string, data: any) {
     const request = new XMLHttpRequest();
     request.onreadystatechange = function() {
         if (request.readyState == 4 && (request.status>=200 && request.status<400)) {
@@ -29,7 +30,7 @@ async function postIt(url, data) {
     request.send(data);
 }
 
-async function getIt(url) {
+async function getIt(url: string) {
     const request = new XMLHttpRequest();
     request.onreadystatechange = function() {
         if (request.readyState === 4 && (request.status>=200 && request.status<400)) {
@@ -40,14 +41,15 @@ async function getIt(url) {
     request.send();
 }
 
-async function showContent(id) {
+async function showContent(id: string) {
     const data = await getIt(`/get?id=${id}`);
     if (data != undefined) setContent(data);
 }
 
-function setContent(content, ctype) {
+function setContent(content: any, ctype?: string | null) {
     console.log("setting content")
     const element = document.getElementById("content");
+    if (!element) return;
     switch(ctype) {
         case "text/html":
             element.innerHTML = content;
