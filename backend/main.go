@@ -9,7 +9,9 @@ import (
 	"mime"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
+	"strings"
 )
 
 const (
@@ -20,7 +22,7 @@ const (
 func main() {
 	http.HandleFunc("/upload", uploadHandler)
 	http.HandleFunc("/get", getHandler)
-	// http.HandleFunc("/r/", redirectHandler)
+	http.HandleFunc("/r/", redirectHandler)
 	http.HandleFunc("/", mainHandler)
 
 	mime.AddExtensionType(".ts", "application/typescript")
@@ -62,6 +64,12 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	mimeType := http.DetectContentType(p)
+	if strings.HasPrefix(mimeType, "text/plain") {
+		if strings.HasPrefix(string(p), "http://") || strings.HasPrefix(string(p), "https://") {
+			mimeType = "redirect"
+			w.Header().Add("Content-Type", mimeType)
+		}
+	}
 	id := DB.Set(p, mimeType)
 	w.Write([]byte(id))
 }
@@ -76,6 +84,16 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	w.Header().Add("Content-Type", data.MimeType)
 	w.Write(data.Blob)
+}
+
+func redirectHandler(w http.ResponseWriter, r *http.Request) {
+	id := path.Base(r.URL.Path)
+	data, err := DB.Get(id)
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+	http.Redirect(w, r, string(data.Blob), http.StatusPermanentRedirect)
 }
 
 type InMemoryDB []DatabaseItem

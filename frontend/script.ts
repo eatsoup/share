@@ -20,25 +20,22 @@ window.addEventListener('load', async (e) => {
 
 
 async function postIt(url: string, data: any) {
-    const request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-        if (request.readyState == 4 && (request.status>=200 && request.status<400)) {
-            setContent(`<a href="?id=${request.responseText}">click</a>`);
+    const response = await fetch(url, {method: "POST", body: data})
+    if (response.ok) {
+        const text = await response.text();
+        const ctype = response.headers.get("Content-Type");
+        if (ctype != "redirect") {
+            setContent(`<a href="/?id=${text}">Click </a>`);
+            return;
         }
+        setContent(text, ctype);
     }
-    request.open("POST", url);
-    request.send(data);
 }
 
 async function getIt(url: string) {
-    const request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-        if (request.readyState === 4 && (request.status>=200 && request.status<400)) {
-            setContent(request.responseText, request.getResponseHeader("Content-Type"));
-        }
-    }
-    request.open("GET", url);
-    request.send();
+    const response = await fetch(url);
+    const blob = await response.blob()
+    setContent(blob, blob.type)
 }
 
 async function showContent(id: string) {
@@ -46,16 +43,14 @@ async function showContent(id: string) {
     if (data != undefined) setContent(data);
 }
 
-function setContent(content: any, ctype?: string | null) {
-    console.log("setting content")
+async function setContent(content: any, ctype?: string | null) {
+    console.log("setting content", ctype);
+    console.log(content)
     const element = document.getElementById("content");
     if (!element) return;
     switch(ctype) {
-        case "text/html":
-            element.innerHTML = content;
-            break;
         case "image/png":
-            const blob = new Blob([content], {type: ctype});
+            var blob = content as Blob;
             const reader = new FileReader();
             reader.onloadend = () => {
                 const bstring = reader.result;
@@ -63,8 +58,16 @@ function setContent(content: any, ctype?: string | null) {
             }
             reader.readAsDataURL(blob);
             break;
+        case "redirect":
+            element.innerHTML = `<a href="/r/${content}">Click</a>`;
+            break;
         default:
-            element.innerHTML = content;
+            try {
+                var blob = content as Blob;
+                element.innerHTML = await blob.text();
+            } catch (e) {
+                element.innerHTML = content;
+            }
     }
     element.hidden = false;
 }
