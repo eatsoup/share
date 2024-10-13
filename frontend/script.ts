@@ -47,6 +47,7 @@ async function setContent(content: any, ctype?: string | null) {
     console.log("setting content", ctype);
     console.log(content)
     const element = document.getElementById("content");
+    const footnote = document.getElementById("footnote");
     if (!element) return;
     switch(ctype) {
         case "image/png":
@@ -67,6 +68,7 @@ async function setContent(content: any, ctype?: string | null) {
                 element.innerHTML = await blob.text();
             } catch (e) {
                 element.innerHTML = content;
+                footnote.innerHTML = `Content-Type not recogized: ${ctype}`
             }
     }
     element.hidden = false;
