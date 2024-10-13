@@ -1,16 +1,11 @@
 package main
 
 import (
-	"crypto/md5"
-	"errors"
-	"fmt"
 	"io"
 	"log"
-	"mime"
 	"net/http"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 )
 
@@ -19,36 +14,39 @@ const (
 	Image string = "image"
 )
 
+var jsBag map[string]string = make(map[string]string)
+
 func main() {
 	http.HandleFunc("/upload", uploadHandler)
 	http.HandleFunc("/get", getHandler)
 	http.HandleFunc("/r/", redirectHandler)
 	http.HandleFunc("/", mainHandler)
+	http.HandleFunc("/script.js", jsHandler)
 
-	mime.AddExtensionType(".ts", "application/typescript")
+	tsList := []string{"script.ts"}
+	for _, f := range tsList {
+		tsContent, err := os.ReadFile("../frontend/" + f)
+		if err != nil {
+			log.Fatal(err)
+		}
+		jsBag[strings.Replace(f, ".ts", ".js", 1)], err = Transpile(string(tsContent))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	log.Println("Server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
-	path := "../frontend" + r.URL.Path
-	ext := filepath.Ext(path)
-	if ext == ".ts" {
-		tsBytes, err := os.ReadFile(path)
-		if err != nil {
-			w.WriteHeader(404)
-			return
-		}
-		js, err := Transpile(string(tsBytes))
-		if err != nil {
-			w.WriteHeader(500)
-			return
-		}
-		w.Header().Set("Content-Type", "application/javascript")
-		w.Write([]byte(js))
-		return
-	}
-	http.ServeFile(w, r, path)
+	http.ServeFile(w, r, "../frontend/index.html")
+}
+
+func jsHandler(w http.ResponseWriter, r *http.Request) {
+	content := jsBag[path.Base(r.URL.Path)]
+	w.Header().Add("content-type", "text/javascript")
+	w.Write([]byte(content))
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
@@ -96,28 +94,11 @@ func redirectHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, string(data.Blob), http.StatusPermanentRedirect)
 }
 
-type InMemoryDB []DatabaseItem
+var DB Database = &InMemoryDB{}
 
-var DB InMemoryDB
-
-func (db *InMemoryDB) Set(blob []byte, mt string) string {
-	id := fmt.Sprintf("%x", md5.Sum(blob))
-	item := DatabaseItem{
-		Id:       id,
-		Blob:     blob,
-		MimeType: mt,
-	}
-	*db = append(*db, item)
-	return id
-}
-
-func (db *InMemoryDB) Get(id string) (DatabaseItem, error) {
-	for _, entry := range *db {
-		if entry.Id == id {
-			return entry, nil
-		}
-	}
-	return DatabaseItem{}, errors.New("not found")
+type Database interface {
+	Set(blob []byte, mt string) string
+	Get(id string) (DatabaseItem, error)
 }
 
 type DatabaseItem struct {
