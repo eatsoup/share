@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickShare - Easy File Sharing</title>
+    <style>
+        :root {
+            --navy: #1a2a3a;
+            --dark-navy: #0f1a2a;
+            --orange: #ff6600;
+            --light-orange: #ff8533;
+            --gray: #a0a0a0;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--dark-navy);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #share {
+            background-color: var(--navy);
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        #content {
+            margin-top: 20px;
+            max-height: 400px;
+            max-width: 600px;
+            overflow-y: auto;
+            background-color: var(--navy);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: left;
+        }
+
+        #content img {
+            max-width: 100%;
+            height: auto;
+            cursor: pointer;
+        }
+
+        #content pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        #fullscreenOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            /* justify-content: center; */
+            align-items: center;
+            overflow: auto;
+        }
+
+        #fullscreenImage {
+            margin-left: auto;
+            margin-top: auto;
+        }
+
+        h1 {
+            color: var(--orange);
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        #instructions {
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: var(--gray);
+        }
+
+        #paste-area {
+            background-color: var(--dark-navy);
+            border: 2px dashed var(--orange);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 18px;
+            color: var(--light-orange);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #paste-area:hover {
+            background-color: rgba(255, 102, 0, 0.1);
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            color: var(--light-orange);
+        }
+
+        #footnote {
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        strong {
+            color: var(--light-orange);
+        }
+    </style>
+</head>
+<body>
+    <div id="share">
+        <h1>QuickShare</h1>
+        <div id="instructions">
+            <p>Welcome to QuickShare! Easily share files, screenshots, and more.</p>
+            <p>To share, simply press <strong>Ctrl+V</strong> (or Cmd+V on Mac) anywhere on this page.</p>
+        </div>
+        <div id="paste-area">Click here or press Ctrl+V to share</div>
+        <div id="result"></div>
+    </div>
+    <div hidden id="content">
+
+    </div>
+    <div id="footnote">QuickShare - Fast and easy file sharing</div>
+    <div id="fullscreenOverlay">
+        <img id="fullscreenImage" src="" alt="Fullscreen Image">
+    </div>
+    <script src="script.js"></script> 
+</body>
+</html>

@@ -40,7 +40,7 @@ func main() {
 }
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "../frontend/index.html")
+	http.ServeFile(w, r, "../frontend/static/index.html")
 }
 
 func jsHandler(w http.ResponseWriter, r *http.Request) {

@@ -43,33 +43,50 @@ async function showContent(id: string) {
     if (data != undefined) setContent(data);
 }
 
+async function showFullscreen() {
+    const overlay = document.getElementById('fullscreenOverlay');
+    const fullscreenImg = document.getElementById('fullscreenImage');
+    const image = document.getElementById('image');
+    const fsImage = document.getElementById('fullscreenImage');
+    if (!overlay || ! fullscreenImg || !image || !fsImage) return;
+    overlay.style.display = 'flex';
+    const src = image.getAttribute('src') || "";
+    fsImage.setAttribute('src', src)
+    overlay.onclick = function() {
+        overlay.style.display = 'none';
+    };
+}
+
 async function setContent(content: any, ctype?: string | null) {
     console.log("setting content", ctype);
     console.log(content)
-    const element = document.getElementById("content");
+    const share = document.getElementById("share");
+    const contentBox = document.getElementById("content");
     const footnote = document.getElementById("footnote");
-    if (!element) return;
+    if (!share || !contentBox) return;
+    share.hidden = true;
+    contentBox.hidden = false;
     switch(ctype) {
         case "image/png":
             var blob = content as Blob;
             const reader = new FileReader();
             reader.onloadend = () => {
                 const bstring = reader.result;
-                element.innerHTML = `<img src="${bstring}">`;
+                contentBox.innerHTML = `<img id="image" src="${bstring}" onClick="showFullscreen()">`;
             }
             reader.readAsDataURL(blob);
             break;
         case "redirect":
-            element.innerHTML = `<a href="/r/${content}">Click</a>`;
+            contentBox.innerHTML = `<a href="/r/${content}">Click</a>`;
             break;
         default:
             try {
                 var blob = content as Blob;
-                element.innerHTML = await blob.text();
+                contentBox.innerHTML = await blob.text();
             } catch (e) {
-                element.innerHTML = content;
+                contentBox.innerHTML = content;
+                if (!footnote) return;
                 footnote.innerHTML = `Content-Type not recogized: ${ctype}`
             }
     }
-    element.hidden = false;
 }
