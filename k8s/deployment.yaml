@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: share
+  namespace: share
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: share
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: web
+        name: share
+        run: share
+    spec:
+      containers:
+      - image: register.jihaa.eu/share:latest
+        imagePullPolicy: Always
+        name: share
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: register.jihaa.eu
+      restartPolicy: Always
