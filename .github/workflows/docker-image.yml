@@ -41,4 +41,4 @@ jobs:
         yq e '.spec.template.spec.containers[0].image = "${{secrets.REGISTRY_URL}}/share:${{ env.SHORT_SHA }}"' -i k8s/deployment.yaml
         git add k8s/deployment.yaml
         git commit -m '[no ci] Update image for release'
-        git push --force
+        git push --force --set-upstream origin release
