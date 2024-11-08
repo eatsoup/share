@@ -25,4 +25,4 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         push: true
-        tags: ${{secrets.REGISTRY_URL}}/share:${SHORT_SHA}
+        tags: ${{secrets.REGISTRY_URL}}/share:$SHORT_SHA
