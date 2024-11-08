@@ -53,5 +53,5 @@ jobs:
           LGTM
 
           Linus
-        base: release
-        branch: master
+        base: master
+        branch: release
