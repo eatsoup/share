@@ -45,7 +45,7 @@ jobs:
 
     - name: Create PR
       if: ${{ github.ref == 'refs/heads/master' }}
-      uses: peter-evans/create-pull-request@v7
+      uses: devops-infra/action-pull-request@v0.5.5
       with:
         author: "Torvalds CI <torvalds@linux-foundation.org>"
         title: "I think you should merge this"
@@ -53,5 +53,5 @@ jobs:
           LGTM
 
           Linus
-        base: master
-        branch: release
+        source_branch: release
+        target_branch: master
