@@ -42,3 +42,16 @@ jobs:
         git add k8s/deployment.yaml
         git commit -m '[no ci] Update image for release'
         git push --force --set-upstream origin release
+
+    - name: Create PR
+      if: ${{ github.ref == 'refs/heads/master' }}
+      uses: peter-evans/create-pull-request@v7
+      with:
+        author: "Torvalds CI <torvalds@linux-foundation.org>"
+        title: "I think you should merge this"
+        body: |
+          LGTM
+
+          Linus
+        base: release
+        branch: master
