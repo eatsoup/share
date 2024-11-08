@@ -34,9 +34,11 @@ jobs:
     - name: Prepare release PR
       if: ${{ github.ref == 'refs/heads/master' }}
       run: |
+        git config user.email "torvalds@linux-foundation.org"
+        git config user.name "Torvalds CI"
         git branch -d release || true
         git checkout -b release
         yq e '.spec.template.spec.containers[0].image = "${{secrets.REGISTRY_URL}}/share:${{ env.SHORT_SHA }}"' -i k8s/deployment.yaml
         git add k8s/deployment.yaml
-        GIT_AUTHOR_EMAIL="CI@nasa.gov" GIT_AUTHOR_NAME="CI" git commit -m '[no ci] Update image for release'
+        git commit -m '[no ci] Update image for release'
         git push --force
