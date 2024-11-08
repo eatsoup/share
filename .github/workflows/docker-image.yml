@@ -36,7 +36,7 @@ jobs:
       run: |
         git branch -d release || true
         git checkout -b release
-        yq -iy '.spec.template.spec.containers[0].image = "${{secrets.REGISTRY_URL}}/share:${{ env.SHORT_SHA }}"' k8s/deployment.yaml
+        yq e '.spec.template.spec.containers[0].image = "${{secrets.REGISTRY_URL}}/share:${{ env.SHORT_SHA }}"' -i k8s/deployment.yaml
         git add k8s/deployment.yaml
         git commit -m '[no ci] Update image for release'
         git push --force
