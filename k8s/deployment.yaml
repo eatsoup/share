@@ -21,13 +21,13 @@ spec:
         run: share
     spec:
       containers:
-      - image: register.jihaa.eu/share:latest
-        imagePullPolicy: Always
-        name: share
-        ports:
-        - containerPort: 8080
-          protocol: TCP
+        - image: register.jihaa.eu/share:a40bb82
+          imagePullPolicy: Always
+          name: share
+          ports:
+            - containerPort: 8080
+              protocol: TCP
       dnsPolicy: ClusterFirst
       imagePullSecrets:
-      - name: register.jihaa.eu
+        - name: register.jihaa.eu
       restartPolicy: Always
