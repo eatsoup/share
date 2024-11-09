@@ -14,11 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - name: dump github context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
-
     - uses: actions/checkout@v3
 
     - name: Calculate SHA
@@ -39,7 +34,7 @@ jobs:
         build-args: |
           SHORT_SHA=${{ env.SHORT_SHA }}
 
-    - name: Prepare release PR
+    - name: Prepare release
       run: |
         git config user.email "torvalds@linux-foundation.org"
         git config user.name "Torvalds CI"
