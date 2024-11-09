@@ -6,8 +6,11 @@ on:
   pull_request:
     branches: [ "master" ]
 
+
 jobs:
-  build:
+  build-and-deploy:
+    # Make sure that we only run this when the source branch is not "release"
+    if: github.ref != 'refs/heads/release'
     runs-on: ubuntu-latest
     steps:
 
@@ -32,7 +35,6 @@ jobs:
           SHORT_SHA=${{ env.SHORT_SHA }}
 
     - name: Prepare release PR
-      if: ${{ github.ref == 'refs/heads/master' }}
       run: |
         git config user.email "torvalds@linux-foundation.org"
         git config user.name "Torvalds CI"
@@ -44,7 +46,6 @@ jobs:
         git push --force --set-upstream origin release
 
     - name: Create PR
-      if: github.ref != 'refs/heads/release' || github.event_name != 'push'
       uses: devops-infra/action-pull-request@v0.5.5
       with:
         author: "Torvalds CI <torvalds@linux-foundation.org>"
