@@ -21,7 +21,7 @@ spec:
         run: share
     spec:
       containers:
-        - image: register.jihaa.eu/share:fa4a00e
+        - image: register.jihaa.eu/share:3549a26
           imagePullPolicy: Always
           name: share
           ports:
