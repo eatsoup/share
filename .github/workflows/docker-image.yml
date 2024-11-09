@@ -44,7 +44,7 @@ jobs:
         git push --force --set-upstream origin release
 
     - name: Create PR
-      if: ${{ github.ref == 'refs/heads/master' }}
+      if: github.ref != 'refs/heads/release' || github.event_name != 'push'
       uses: devops-infra/action-pull-request@v0.5.5
       with:
         author: "Torvalds CI <torvalds@linux-foundation.org>"
