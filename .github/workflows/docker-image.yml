@@ -10,7 +10,7 @@ on:
 jobs:
   build-and-deploy:
     # Make sure that we only run this when the action isn't triggered by our CI
-    if: github.event.commits[0].message != "[no ci] Update image for release"
+    if: github.event.commits[0].message != '[no ci] Update image for release'
     runs-on: ubuntu-latest
     steps:
 
